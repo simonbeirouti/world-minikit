@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "ngrok": "ngrok http --url=$NGROK_URL 3000",
+    "ngrok": "dotenv -- bash -c 'echo Using URL: $NGROK_URL && ngrok http --url=https://$NGROK_URL 3000'",
+    "dev:ngrok": "concurrently \"pnpm dev\" \"pnpm ngrok\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -68,6 +69,8 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "concurrently": "^9.1.0",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.6",
     "postcss": "^8",
