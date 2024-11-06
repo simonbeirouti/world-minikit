@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import {useRouter} from "next/navigation";
 import {useToast} from "@/hooks/use-toast";
-import {cn} from "@/lib/utils";
 
 const ONBOARDING_FIELDS = [
 	{
@@ -59,63 +58,27 @@ const ONBOARDING_FIELDS = [
 	{
 		id: "topics",
 		label: "Interests",
-		type: "toggle-group",
+		type: "select",
+		multiple: true,
 		options: [
-			{ value: "technology", label: "Technology" },
-			{ value: "science", label: "Science" },
-			{ value: "arts", label: "Arts" },
-			{ value: "business", label: "Business" }
-		]
+			{value: "technology", label: "Technology"},
+			{value: "science", label: "Science"},
+			{value: "arts", label: "Arts"},
+			{value: "business", label: "Business"},
+		],
 	},
 	{
 		id: "preferences",
 		label: "Preferences",
-		type: "toggle-group",
+		type: "select",
+		multiple: true,
 		options: [
-			{ value: "darkMode", label: "Dark Mode" },
-			{ value: "notifications", label: "Notifications" },
-			{ value: "newsletter", label: "Newsletter" }
-		]
+			{value: "darkMode", label: "Dark Mode"},
+			{value: "notifications", label: "Notifications"},
+			{value: "newsletter", label: "Newsletter"},
+		],
 	},
 ];
-
-type ToggleButtonGroupProps = {
-	field: typeof ONBOARDING_FIELDS[0],
-	values: string[],
-	onChange: (values: string[]) => void
-};
-
-function ToggleButtonGroup({ field, values, onChange }: ToggleButtonGroupProps) {
-	return (
-		<div className="space-y-2">
-			<div className="flex flex-wrap gap-2">
-				{field.options.map((option) => {
-					const isSelected = values.includes(option.value);
-					return (
-						<button
-							key={option.value}
-							onClick={() => {
-								const newValues = isSelected
-									? values.filter(v => v !== option.value)
-									: [...values, option.value];
-								onChange(newValues);
-							}}
-							className={cn(
-								"px-3 py-1.5 text-sm rounded-md border transition-colors",
-								isSelected 
-									? "bg-primary text-primary-foreground border-primary" 
-									: "bg-background hover:bg-accent border-input"
-							)}
-							type="button"
-						>
-							{option.label}
-						</button>
-					);
-				})}
-			</div>
-		</div>
-	);
-}
 
 export function RouterScreen() {
 	const {data: session} = useSession();
@@ -233,13 +196,7 @@ export function RouterScreen() {
 					{ONBOARDING_FIELDS.map((field) => (
 						<div key={field.id} className="space-y-2">
 							<Label htmlFor={field.id}>{field.label}</Label>
-							{field.type === "toggle-group" ? (
-								<ToggleButtonGroup
-									field={field}
-									values={formData[field.id]}
-									onChange={(values) => setFormData({ ...formData, [field.id]: values })}
-								/>
-							) : field.type === "input" ? (
+							{field.type === "input" ? (
 								<Input
 									id={field.id}
 									placeholder={field.placeholder}
