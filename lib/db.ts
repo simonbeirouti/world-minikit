@@ -41,3 +41,33 @@ export async function getUserOnboardingStatus(userName: string) {
 		throw error;
 	}
 }
+
+export async function updateUserProfile(userId: string, profileData: {
+	name?: string;
+	email?: string;
+	language?: string;
+	timezone?: string;
+	topics?: any;
+	preferences?: any;
+	onboardingStatus?: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+}) {
+	try {
+		const userProfile = await prisma.userProfile.upsert({
+			where: {
+				userId: userId,
+			},
+			update: {
+				...profileData,
+			},
+			create: {
+				userId: userId,
+				...profileData,
+			},
+		});
+
+		return userProfile;
+	} catch (error) {
+		console.error("Error in updateUserProfile:", error);
+		throw error;
+	}
+}

@@ -5,7 +5,8 @@ import MiniKitProvider from "@/components/minikit-provider";
 import dynamic from "next/dynamic";
 import NextAuthProvider from "@/components/next-auth-provider";
 import { Gate } from "@/components/Gate";
-import { Footer } from "@/components/Footer";
+import {Footer} from "@/components/Footer";
+import {Toaster} from "@/components/ui/toaster";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -38,6 +39,8 @@ export default function RootLayout({
 						</MiniKitProvider>
 					</ErudaProvider>
 				</NextAuthProvider>
+				{/* @ts-ignore */}
+				<Toaster position="top-center" />
 			</body>
 		</html>
 	);
