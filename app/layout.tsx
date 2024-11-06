@@ -4,6 +4,8 @@ import "./globals.css";
 import MiniKitProvider from "@/components/minikit-provider";
 import dynamic from "next/dynamic";
 import NextAuthProvider from "@/components/next-auth-provider";
+import { Gate } from "@/components/Gate";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -25,10 +27,15 @@ export default function RootLayout({
 	);
 	return (
 		<html lang="en">
-			<body className={inter.className}>
+			<body className={`${inter.className} h-screen w-screen overflow-hidden`}>
 				<NextAuthProvider>
 					<ErudaProvider>
-						<MiniKitProvider>{children}</MiniKitProvider>
+						<MiniKitProvider>
+							<Gate>
+								{children}
+								<Footer />
+							</Gate>
+						</MiniKitProvider>
 					</ErudaProvider>
 				</NextAuthProvider>
 			</body>
