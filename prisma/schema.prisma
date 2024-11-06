@@ -9,10 +9,9 @@ datasource db {
 
 model User {
     id                String         @id @default(uuid()) @db.Uuid
-    email             String         @unique
+    email             String?        @unique
     createdAt         DateTime       @default(now()) @map("created_at")
     lastLogin         DateTime?      @map("last_login")
-    preferences       Json?
     conversations     Conversation[]
     worldIdHash       String?        @unique @map("world_id_hash")
     worldIdNullifier  String?        @unique @map("world_id_nullifier")
@@ -28,7 +27,9 @@ model User {
 model UserProfile {
     id               String           @id @default(uuid()) @db.Uuid
     userId           String           @unique @db.Uuid
-    name             String? // Made optional since we might not have it initially
+    name             String?
+    email            String?          @unique
+    preferences      Json?
     language         String           @default("en")
     timezone         String           @default("UTC")
     topics           String[]         @default([])

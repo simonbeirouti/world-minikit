@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import {prisma} from "./prisma";
 
 export async function createOrUpdateUser(worldcoinData: {
 	sub: string;
@@ -15,11 +15,29 @@ export async function createOrUpdateUser(worldcoinData: {
 		},
 		create: {
 			id: crypto.randomUUID(),
-			email: worldcoinData.sub,
 			worldIdHash: worldcoinData.sub,
 			verificationLevel: worldcoinData.verification_level,
 			lastVerification: new Date(),
 			lastLogin: new Date(),
 		},
 	});
+}
+
+export async function getUserOnboardingStatus(userName: string) {
+	try {
+		const userProfile = await prisma.user.findFirst({
+			where: {
+				worldIdHash: userName,
+			},
+			select: {
+				id: true,
+				profile: true,
+			},
+		});
+
+		return userProfile;
+	} catch (error) {
+		console.error("Error in getUserOnboardingStatus:", error);
+		throw error;
+	}
 }
