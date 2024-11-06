@@ -39,8 +39,7 @@ export default function RootLayout({
 						</MiniKitProvider>
 					</ErudaProvider>
 				</NextAuthProvider>
-				{/* @ts-ignore */}
-				<Toaster position="top-center" />
+				<Toaster />
 			</body>
 		</html>
 	);
