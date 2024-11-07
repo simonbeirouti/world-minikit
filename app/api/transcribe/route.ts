@@ -11,7 +11,13 @@ const groq = new Groq({
 
 export async function POST(request: Request) {
   const tempDir = path.join(process.cwd(), 'tmp')
-  const fileName = `${uuidv4()}.webm`
+  const formData = await request.formData()
+  const audioFile = formData.get('audio') as Blob
+  const questionKey = formData.get('questionKey') as string
+  
+  // Determine file extension based on MIME type
+  const fileExt = audioFile.type.includes('webm') ? 'webm' : 'mp4'
+  const fileName = `${uuidv4()}.${fileExt}`
   const filePath = path.join(tempDir, fileName)
 
   try {
@@ -19,16 +25,12 @@ export async function POST(request: Request) {
       fs.mkdirSync(tempDir, { recursive: true })
     }
 
-    const formData = await request.formData()
-    const audioFile = formData.get('audio') as Blob
-    const questionKey = formData.get('questionKey') as string
-
     if (!audioFile) {
       throw new Error('No audio file provided')
     }
 
-    // Convert blob to Buffer and save to temp file
-    const buffer = Buffer.from(await audioFile.arrayBuffer())
+    const arrayBuffer = await audioFile.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
     await writeFile(filePath, buffer)
 
     const transcription = await groq.audio.transcriptions.create({
