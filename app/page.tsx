@@ -1,5 +1,5 @@
-// import { RouterScreen } from "@/components/RouterScreen";
-import { OnboardingFlow } from "@/components/OnboardingFlow";
+// import { RouterScreen } from "@/components/router-screen";
+import { OnboardingFlow } from "@/components/onboarding-flow";
 
 export default function Home() {
   return (

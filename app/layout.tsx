@@ -4,8 +4,8 @@ import "./globals.css";
 import MiniKitProvider from "@/components/minikit-provider";
 import dynamic from "next/dynamic";
 import NextAuthProvider from "@/components/next-auth-provider";
-import { Gate } from "@/components/Gate";
-import {Footer} from "@/components/Footer";
+import { Gate } from "@/components/gate";
+import {Footer} from "@/components/footer";
 import {Toaster} from "@/components/ui/toaster";
 
 const inter = Inter({subsets: ["latin"]});
@@ -21,7 +21,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	const ErudaProvider = dynamic(
-		() => import("../components/Eruda").then((c) => c.ErudaProvider),
+		() => import("../components/eruda").then((c) => c.ErudaProvider),
 		{
 			ssr: false,
 		}
