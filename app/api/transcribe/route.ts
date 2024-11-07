@@ -37,13 +37,18 @@ export async function POST(request: Request) {
       language: "en",
       response_format: "verbose_json",
       temperature: 0.0,
-      prompt: "This is a personal onboarding conversation where the user is describing themselves, their interests, and hobbies."
+      prompt: ""
     })
 
     fs.unlinkSync(filePath)
 
+    const cleanTranscription = transcription.text.replace(
+      /This is a personal onboarding conversation where the user is.*?(?=\w)/gi,
+      ''
+    ).trim();
+
     return NextResponse.json({ 
-      text: transcription.text,
+      text: cleanTranscription,
       questionKey
     })
   } catch (error) {
