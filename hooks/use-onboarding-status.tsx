@@ -1,3 +1,5 @@
+"use client";
+
 import {useSession} from "next-auth/react";
 import {useState, useEffect} from "react";
 
@@ -12,7 +14,7 @@ interface UserProfile {
 export function useOnboardingStatus() {
 	const {data: session} = useSession();
 	const [loading, setLoading] = useState(true);
-    const [profile, setProfile] = useState<UserProfile | null>(null);
+	const [profile, setProfile] = useState<UserProfile | null>(null);
 
 	useEffect(() => {
 		async function checkStatus() {
