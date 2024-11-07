@@ -2,7 +2,6 @@
 
 import {useState, useRef, useEffect} from "react";
 import {Button} from "@/components/ui/button";
-import {Card} from "@/components/ui/card";
 import {Progress} from "@/components/ui/progress";
 import {Trash2, RefreshCw, Mic, MicOff} from "lucide-react";
 import {useToast} from "@/hooks/use-toast";
@@ -315,7 +314,7 @@ export function OnboardingFlow() {
 				/>
 
 				{/* Summary of all responses */}
-				<Card className="p-6">
+				<div className="p-6">
 					<h3 className="text-lg font-semibold mb-4">
 						Your Responses
 					</h3>
@@ -349,7 +348,7 @@ export function OnboardingFlow() {
 							</p>
 						</div>
 					)}
-				</Card>
+				</div>
 
 				<div className="space-y-4">
 					<h2 className="text-2xl font-bold">
