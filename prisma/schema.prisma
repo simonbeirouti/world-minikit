@@ -20,6 +20,8 @@ model User {
     lastVerification  DateTime?      @map("last_verification")
     profile           UserProfile?
     aiPersonality     AIPersonality?
+    interests         String[]       @default([])
+    questions         Question[]
 
     @@map("users")
 }
@@ -81,6 +83,16 @@ model AIPersonality {
     user               User     @relation(fields: [userId], references: [id])
 
     @@map("ai_personalities")
+}
+
+model Question {
+    id        String   @id @default(uuid()) @db.Uuid
+    userId    String   @db.Uuid
+    user      User     @relation(fields: [userId], references: [id])
+    question  String
+    createdAt DateTime @default(now())
+
+    @@map("questions")
 }
 
 enum OnboardingStatus {
