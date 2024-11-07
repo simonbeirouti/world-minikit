@@ -2,7 +2,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { Button } from "../ui/button";
+import { Button } from "./ui/button";
 import { Lock, Menu } from "lucide-react";
 
 export function Footer() {

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { ScrollArea } from "../ui/scroll-area";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface Message {
   role: "user" | "assistant";

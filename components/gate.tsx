@@ -1,6 +1,6 @@
 "use client";
 
-import { SignIn } from "../SignIn";
+import { SignIn } from "./sign-in";
 import { useExists } from "@/hooks/use-exists-status";
 
 interface GateProps {
