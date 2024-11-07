@@ -1,7 +1,7 @@
-"use client";
+ "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "./use-toast";
 import { RecordingSystem, Question } from "@/types/recording";
 
 interface UseRecorderProps {
