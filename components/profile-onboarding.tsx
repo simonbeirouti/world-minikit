@@ -45,18 +45,6 @@ const ONBOARDING_FIELDS = [
 		],
 	},
 	{
-		id: "timezone",
-		label: "Timezone",
-		type: "select",
-		options: [
-			{value: "UTC", label: "UTC"},
-			{value: "America/New_York", label: "EST"},
-			{value: "America/Los_Angeles", label: "PST"},
-			{value: "Europe/London", label: "GMT"},
-			{value: "Asia/Tokyo", label: "JST"},
-		],
-	},
-	{
 		id: "topics",
 		label: "Interests",
 		type: "toggle-group",
@@ -117,7 +105,7 @@ function ToggleButtonGroup({ field, values, onChange }: ToggleButtonGroupProps) 
 	);
 }
 
-export function RouterScreen() {
+export function ProfileOnboarding() {
 	const {data: session} = useSession();
 	const {loading, profile} = useOnboardingStatus();
 	const [setupProgress, setSetupProgress] = useState(0);
@@ -129,7 +117,6 @@ export function RouterScreen() {
 		name: "",
 		email: "",
 		language: "en",
-		timezone: "UTC",
 		topics: [] as string[],
 		preferences: [] as string[],
 	});
@@ -165,51 +152,57 @@ export function RouterScreen() {
 	};
 
     const handleSubmit = async () => {
-        if (!validateForm()) return;
-		if (!session?.user?.id) {
-			toast({
-				title: "Error",
-				description: "User not authenticated",
-				variant: "destructive",
-			});
-			return;
-		}
+		if (!validateForm()) return;
+        if (!session?.user?.name) {
+            toast({
+                title: "Error",
+                description: "User not authenticated with World ID",
+                variant: "destructive",
+            });
+            return;
+        }
 
-		try {
-			const response = await fetch("/api/user/onboarding", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					userId: session.user.id,
-					profileData: {
-						...formData,
-						topics: JSON.stringify(formData.topics),
-						preferences: JSON.stringify(formData.preferences),
-					},
-				}),
-			});
+        setIsSubmitting(true);
+        try {
+            const response = await fetch("/api/user/onboarding", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    profileData: {
+                        name: formData.name,
+                        email: formData.email,
+                        language: formData.language,
+                        topics: JSON.stringify(formData.topics),
+                        preferences: JSON.stringify(formData.preferences),
+                        onboardingStatus: "COMPLETED",
+                    },
+                }),
+            });
 
-			if (!response.ok) {
-				throw new Error(await response.text());
-			}
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
 
-			toast({
-				title: "Success",
-				description: "Profile saved successfully",
-			});
+            toast({
+                title: "Success",
+                description: "Profile saved successfully",
+            });
 
-			router.refresh();
-		} catch (error) {
-			console.error("Error saving profile:", error);
-			toast({
-				title: "Error",
-				description: "Failed to save profile",
-				variant: "destructive",
-			});
-		}
-	};
+            router.refresh();
+            router.push("/chat");
+        } catch (error) {
+            console.error("Error saving profile:", error);
+            toast({
+                title: "Error",
+                description: "Failed to save profile",
+                variant: "destructive",
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
 	if (loading) {
 		return (
@@ -227,7 +220,7 @@ export function RouterScreen() {
 		profile?.profile?.onboardingStatus === "NOT_STARTED"
 	) {
 		return (
-			<div className="flex flex-col items-center justify-center min-h-screen space-y-6 p-4">
+			<div className="flex flex-col items-center justify-center min-h-screen space-y-6 p-4 overflow-auto">
 				<h1 className="text-4xl font-bold text-center">Your Profile</h1>
 				<div className="w-full max-w-md space-y-6">
 					{ONBOARDING_FIELDS.map((field) => (
