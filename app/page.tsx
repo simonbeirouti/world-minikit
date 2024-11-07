@@ -1,10 +1,9 @@
-// import { RouterScreen } from "@/components/router-screen";
-import { OnboardingFlow } from "@/components/onboarding-flow";
+import { ProfileOnboarding } from '@/components/profile-onboarding';
 
 export default function Home() {
   return (
-    <main>
-      <OnboardingFlow />
+    <main className="overflow-auto">
+      <ProfileOnboarding />
     </main>
   );
 }
