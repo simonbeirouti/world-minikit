@@ -23,15 +23,16 @@ export async function createOrUpdateUser(worldcoinData: {
 	});
 }
 
-export async function getUserOnboardingStatus(userName: string) {
+export async function getUserOnboardingStatus(worldIdHash: string) {
 	try {
-		const userProfile = await prisma.user.findFirst({
+		const userProfile = await prisma.user.findUnique({
 			where: {
-				worldIdHash: userName,
+				worldIdHash: worldIdHash,
 			},
 			select: {
 				id: true,
 				profile: true,
+				worldIdHash: true,
 			},
 		});
 
@@ -47,21 +48,19 @@ export async function updateUserProfile(userId: string, profileData: {
 	email?: string;
 	language?: string;
 	timezone?: string;
-	topics?: any;
-	preferences?: any;
+	topics?: string;
+	preferences?: string;
 	onboardingStatus?: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
 }) {
 	try {
-		const userProfile = await prisma.userProfile.upsert({
+		const userProfile = await prisma.userProfile.update({
 			where: {
 				userId: userId,
 			},
-			update: {
+			data: {
 				...profileData,
-			},
-			create: {
-				userId: userId,
-				...profileData,
+				onboardingStatus: "COMPLETED",
+				updatedAt: new Date(),
 			},
 		});
 
