@@ -18,23 +18,32 @@ export function useOnboardingStatus() {
 
 	useEffect(() => {
 		async function checkStatus() {
-			if (!session?.user?.name) return;
+			if (!session?.user?.name) {
+				setLoading(false);
+				return;
+			}
 
 			try {
-				const response = await fetch(
-					`/api/user/onboarding?userName=${session?.user?.name}`
-				);
-				const data = await response.json();
-				setProfile(data);
+				const response = await fetch("/api/user/exists", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
+
+				if (response.ok) {
+					const data = await response.json();
+					setProfile(data);
+				}
 			} catch (error) {
-				console.error("Error fetching onboarding status:", error);
+				console.error("Error checking onboarding status:", error);
 			} finally {
 				setLoading(false);
 			}
 		}
 
 		checkStatus();
-	}, [session]);
+	}, [session?.user?.name]);
 
 	return {loading, profile};
 }
