@@ -1,20 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Trash2, RefreshCw, Mic, MicOff } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useRecorder } from "@/hooks/use-recorder";
-import { ResponsesSummary } from "@/components/responses-summary";
-import { questions } from "@/types/recording";
+import {useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Progress} from "@/components/ui/progress";
+import {Trash2, RefreshCw, Mic, MicOff} from "lucide-react";
+import {useToast} from "@/hooks/use-toast";
+import {useRecorder} from "@/hooks/use-recorder";
+import {ResponsesSummary} from "@/components/responses-summary";
+import {questions} from "@/types/recording";
 
 export function OnboardingFlow() {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [recordings, setRecordings] = useState<Record<string, Blob>>({});
-	const [transcriptions, setTranscriptions] = useState<Record<string, string>>({});
+	const [transcriptions, setTranscriptions] = useState<
+		Record<string, string>
+	>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const { toast } = useToast();
+	const {toast} = useToast();
 
 	const {
 		timeLeft,
@@ -41,7 +43,8 @@ export function OnboardingFlow() {
 		}
 	};
 
-	const allResponsesComplete = Object.keys(transcriptions).length === questions.length;
+	const allResponsesComplete =
+		Object.keys(transcriptions).length === questions.length;
 
 	const handlePointerDown = async (e: React.PointerEvent) => {
 		e.preventDefault();
@@ -59,9 +62,11 @@ export function OnboardingFlow() {
 	};
 
 	return (
-		<div className="w-full max-w-3xl mx-auto space-y-8">
-			<div className="p-6 space-y-6">
-				<Progress value={((currentStep + 1) / questions.length) * 100} />
+		<div className="w-full h-[calc(100vh-2rem)] max-w-3xl mx-auto space-y-8">
+			<div className="h-full p-6 space-y-6 flex flex-col">
+				<Progress
+					value={((currentStep + 1) / questions.length) * 100}
+				/>
 
 				<ResponsesSummary
 					questions={questions}
@@ -70,10 +75,12 @@ export function OnboardingFlow() {
 					allResponsesComplete={allResponsesComplete}
 				/>
 
-				<div className="space-y-4">
-					<h2 className="text-2xl font-bold">{questions[currentStep].text}</h2>
+				<div className="flex-1 flex flex-col space-y-4">
+					<h2 className="text-2xl font-bold">
+						{questions[currentStep].text}
+					</h2>
 
-					<div className="space-y-4">
+					<div className="flex-1 flex flex-col space-y-4">
 						{recordings[questions[currentStep].key] && (
 							<div className="space-y-3 rounded-lg bg-muted p-4">
 								{isTranscribing ? (
@@ -86,13 +93,20 @@ export function OnboardingFlow() {
 										</div>
 									</div>
 								) : (
-									transcriptions[questions[currentStep].key] && (
+									transcriptions[
+										questions[currentStep].key
+									] && (
 										<div className="p-4 bg-background rounded-md border">
 											<p className="text-sm font-medium text-muted-foreground mb-2">
 												Transcription:
 											</p>
 											<p className="text-sm leading-relaxed">
-												{transcriptions[questions[currentStep].key]}
+												{
+													transcriptions[
+														questions[currentStep]
+															.key
+													]
+												}
 											</p>
 										</div>
 									)
@@ -100,7 +114,11 @@ export function OnboardingFlow() {
 
 								<div className="flex items-center gap-2">
 									<audio
-										src={URL.createObjectURL(recordings[questions[currentStep].key])}
+										src={URL.createObjectURL(
+											recordings[
+												questions[currentStep].key
+											]
+										)}
 										controls
 										className="flex-1"
 									/>
@@ -116,7 +134,11 @@ export function OnboardingFlow() {
 									<Button
 										variant="outline"
 										size="icon"
-										onClick={() => deleteRecording(questions[currentStep].key)}
+										onClick={() =>
+											deleteRecording(
+												questions[currentStep].key
+											)
+										}
 										disabled={isSubmitting}
 										title="Delete recording"
 									>
@@ -125,41 +147,43 @@ export function OnboardingFlow() {
 								</div>
 							</div>
 						)}
-
-						<div className="flex justify-center">
+						<div className="flex-1 flex flex-col justify-center items-center gap-4">
 							<Button
 								onPointerDown={handlePointerDown}
 								onPointerUp={handlePointerUp}
 								onPointerLeave={handlePointerLeave}
-								variant={isRecording ? "destructive" : "default"}
+								variant={
+									isRecording ? "destructive" : "default"
+								}
 								size="icon"
-								className="h-16 w-16 rounded-full touch-none select-none"
+								className="h-24 w-24 rounded-full touch-none select-none" 
 								disabled={isSubmitting || isTranscribing}
 							>
 								{isRecording ? (
 									<>
-										<MicOff className="h-8 w-8" />
-										<span className="sr-only">Release to stop ({timeLeft}s)</span>
+										<MicOff className="h-12 w-12" />
+										<span className="sr-only">
+											Release to stop ({timeLeft}s)
+										</span>
 									</>
 								) : (
 									<>
-										<Mic className="h-8 w-8" />
-										<span className="sr-only">Press and hold to record</span>
+										<Mic className="h-12 w-12" />
+										<span className="sr-only">
+											Press and hold to record
+										</span>
 									</>
 								)}
 							</Button>
 						</div>
-						{isRecording && (
-							<p className="text-center text-sm text-muted-foreground">
-								Recording... {timeLeft}s remaining
-							</p>
-						)}
 					</div>
 
-					<div className="flex justify-between gap-4 mt-6">
+					<div className="flex justify-between gap-4">
 						<Button
 							variant="outline"
-							onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
+							onClick={() =>
+								setCurrentStep((prev) => Math.max(0, prev - 1))
+							}
 							disabled={currentStep === 0 || isSubmitting}
 							className="w-full"
 						>
@@ -167,10 +191,15 @@ export function OnboardingFlow() {
 						</Button>
 						<Button
 							onClick={handleNext}
-							disabled={!recordings[questions[currentStep].key] || isTranscribing}
+							disabled={
+								!recordings[questions[currentStep].key] ||
+								isTranscribing
+							}
 							className="w-full"
 						>
-							{currentStep === questions.length - 1 ? "Finish" : "Next"}
+							{currentStep === questions.length - 1
+								? "Finish"
+								: "Next"}
 						</Button>
 					</div>
 				</div>
