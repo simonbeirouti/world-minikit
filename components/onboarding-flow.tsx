@@ -6,7 +6,7 @@ import {Progress} from "@/components/ui/progress";
 import {Trash2, RefreshCw, Mic, MicOff} from "lucide-react";
 import {useToast} from "@/hooks/use-toast";
 import {useRecorder} from "@/hooks/use-recorder";
-import {ResponsesSummary} from "@/components/responses-summary";
+// import {ResponsesSummary} from "@/components/responses-summary";
 import {questions} from "@/types/recording";
 
 export function OnboardingFlow() {
@@ -43,8 +43,8 @@ export function OnboardingFlow() {
 		}
 	};
 
-	const allResponsesComplete =
-		Object.keys(transcriptions).length === questions.length;
+	// const allResponsesComplete =
+	// 	Object.keys(transcriptions).length === questions.length;
 
 	const handlePointerDown = async (e: React.PointerEvent) => {
 		e.preventDefault();
@@ -68,15 +68,15 @@ export function OnboardingFlow() {
 					value={((currentStep + 1) / questions.length) * 100}
 				/>
 
-				<ResponsesSummary
+				{/* <ResponsesSummary
 					questions={questions}
 					transcriptions={transcriptions}
 					currentStep={currentStep}
 					allResponsesComplete={allResponsesComplete}
-				/>
+				/> */}
 
 				<div className="flex-1 flex flex-col space-y-4">
-					<h2 className="text-2xl font-bold">
+					<h2 className="text-2xl font-bold text-center py-12">
 						{questions[currentStep].text}
 					</h2>
 
@@ -147,35 +147,34 @@ export function OnboardingFlow() {
 								</div>
 							</div>
 						)}
-						<div className="flex-1 flex flex-col justify-center items-center gap-4">
-							<Button
-								onPointerDown={handlePointerDown}
-								onPointerUp={handlePointerUp}
-								onPointerLeave={handlePointerLeave}
-								variant={
-									isRecording ? "destructive" : "default"
-								}
-								size="icon"
-								className="h-24 w-24 rounded-full touch-none select-none" 
-								disabled={isSubmitting || isTranscribing}
-							>
-								{isRecording ? (
-									<>
-										<MicOff className="h-12 w-12" />
-										<span className="sr-only">
-											Release to stop ({timeLeft}s)
-										</span>
-									</>
-								) : (
-									<>
-										<Mic className="h-12 w-12" />
-										<span className="sr-only">
-											Press and hold to record
-										</span>
-									</>
-								)}
-							</Button>
-						</div>
+					</div>
+
+					<div className="flex-1 flex flex-col justify-center items-center gap-4">
+						<Button
+							onPointerDown={handlePointerDown}
+							onPointerUp={handlePointerUp}
+							onPointerLeave={handlePointerLeave}
+							variant={isRecording ? "destructive" : "default"}
+							size="icon"
+							className="h-24 w-24 rounded-full touch-none select-none"
+							disabled={isSubmitting || isTranscribing}
+						>
+							{isRecording ? (
+								<>
+									<MicOff className="h-12 w-12" />
+									<span className="sr-only">
+										Release to stop ({timeLeft}s)
+									</span>
+								</>
+							) : (
+								<>
+									<Mic className="h-12 w-12" />
+									<span className="sr-only">
+										Press and hold to record
+									</span>
+								</>
+							)}
+						</Button>
 					</div>
 
 					<div className="flex justify-between gap-4">
