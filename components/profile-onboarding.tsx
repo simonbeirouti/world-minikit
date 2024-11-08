@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import {useRouter} from "next/navigation";
 import {useToast} from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import {cn} from "@/lib/utils";
 
 const ONBOARDING_FIELDS = [
 	{
@@ -41,7 +41,7 @@ const ONBOARDING_FIELDS = [
 			{value: "es", label: "Spanish"},
 			{value: "fr", label: "French"},
 			{value: "de", label: "German"},
-            { value: "it", label: "Italian" },
+			{value: "it", label: "Italian"},
 		],
 	},
 	{
@@ -49,31 +49,31 @@ const ONBOARDING_FIELDS = [
 		label: "Interests",
 		type: "toggle-group",
 		options: [
-			{ value: "technology", label: "Technology" },
-			{ value: "science", label: "Science" },
-			{ value: "arts", label: "Arts" },
-			{ value: "business", label: "Business" }
-		]
+			{value: "technology", label: "Technology"},
+			{value: "science", label: "Science"},
+			{value: "arts", label: "Arts"},
+			{value: "business", label: "Business"},
+		],
 	},
 	{
 		id: "preferences",
 		label: "Preferences",
 		type: "toggle-group",
 		options: [
-			{ value: "darkMode", label: "Dark Mode" },
-			{ value: "notifications", label: "Notifications" },
-			{ value: "newsletter", label: "Newsletter" }
-		]
+			{value: "darkMode", label: "Dark Mode"},
+			{value: "notifications", label: "Notifications"},
+			{value: "newsletter", label: "Newsletter"},
+		],
 	},
 ];
 
 type ToggleButtonGroupProps = {
-	field: typeof ONBOARDING_FIELDS[0],
-	values: string[],
-	onChange: (values: string[]) => void
+	field: (typeof ONBOARDING_FIELDS)[0];
+	values: string[];
+	onChange: (values: string[]) => void;
 };
 
-function ToggleButtonGroup({ field, values, onChange }: ToggleButtonGroupProps) {
+function ToggleButtonGroup({field, values, onChange}: ToggleButtonGroupProps) {
 	return (
 		<div className="space-y-2">
 			<div className="flex flex-wrap gap-2">
@@ -84,14 +84,14 @@ function ToggleButtonGroup({ field, values, onChange }: ToggleButtonGroupProps) 
 							key={option.value}
 							onClick={() => {
 								const newValues = isSelected
-									? values.filter(v => v !== option.value)
+									? values.filter((v) => v !== option.value)
 									: [...values, option.value];
 								onChange(newValues);
 							}}
 							className={cn(
 								"px-3 py-1.5 text-sm rounded-md border transition-colors",
-								isSelected 
-									? "bg-primary text-primary-foreground border-primary" 
+								isSelected
+									? "bg-primary text-primary-foreground border-primary"
 									: "bg-background hover:bg-accent border-input"
 							)}
 							type="button"
@@ -120,6 +120,12 @@ export function ProfileOnboarding() {
 		topics: [] as string[],
 		preferences: [] as string[],
 	});
+
+	useEffect(() => {
+		if (!loading && profile?.profile?.onboardingStatus === "COMPLETED") {
+			router.push("/chat");
+		}
+	}, [loading, profile, router]);
 
 	const validateForm = () => {
 		if (!formData.name?.trim()) {
@@ -151,58 +157,58 @@ export function ProfileOnboarding() {
 		return true;
 	};
 
-    const handleSubmit = async () => {
+	const handleSubmit = async () => {
 		if (!validateForm()) return;
-        if (!session?.user?.name) {
-            toast({
-                title: "Error",
-                description: "User not authenticated with World ID",
-                variant: "destructive",
-            });
-            return;
-        }
+		if (!session?.user?.name) {
+			toast({
+				title: "Error",
+				description: "User not authenticated with World ID",
+				variant: "destructive",
+			});
+			return;
+		}
 
-        setIsSubmitting(true);
-        try {
-            const response = await fetch("/api/user/onboarding", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    profileData: {
-                        name: formData.name,
-                        email: formData.email,
-                        language: formData.language,
-                        topics: JSON.stringify(formData.topics),
-                        preferences: JSON.stringify(formData.preferences),
-                        onboardingStatus: "COMPLETED",
-                    },
-                }),
-            });
+		setIsSubmitting(true);
+		try {
+			const response = await fetch("/api/user/onboarding", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					profileData: {
+						name: formData.name,
+						email: formData.email,
+						language: formData.language,
+						topics: JSON.stringify(formData.topics),
+						preferences: JSON.stringify(formData.preferences),
+						onboardingStatus: "COMPLETED",
+					},
+				}),
+			});
 
-            if (!response.ok) {
-                throw new Error(await response.text());
-            }
+			if (!response.ok) {
+				throw new Error(await response.text());
+			}
 
-            toast({
-                title: "Success",
-                description: "Profile saved successfully",
-            });
+			toast({
+				title: "Success",
+				description: "Profile saved successfully",
+			});
 
-            router.refresh();
-            router.push("/chat");
-        } catch (error) {
-            console.error("Error saving profile:", error);
-            toast({
-                title: "Error",
-                description: "Failed to save profile",
-                variant: "destructive",
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+			router.refresh();
+			router.push("/chat");
+		} catch (error) {
+			console.error("Error saving profile:", error);
+			toast({
+				title: "Error",
+				description: "Failed to save profile",
+				variant: "destructive",
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	if (loading) {
 		return (
@@ -230,7 +236,12 @@ export function ProfileOnboarding() {
 								<ToggleButtonGroup
 									field={field}
 									values={formData[field.id]}
-									onChange={(values) => setFormData({ ...formData, [field.id]: values })}
+									onChange={(values) =>
+										setFormData({
+											...formData,
+											[field.id]: values,
+										})
+									}
 								/>
 							) : field.type === "input" ? (
 								<Input
