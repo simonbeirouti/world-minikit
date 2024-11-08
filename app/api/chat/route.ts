@@ -1,39 +1,45 @@
-import {NextResponse} from "next/server";
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
+import { Groq } from "groq-sdk";
 
-const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://127.0.0.1:11434";
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 export async function POST(req: Request) {
-	try {
-		const body = await req.json();
-		const {message} = body;
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.name) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-		const conversation = await prisma.conversation.create({
-			data: {
-				userId: 'user-id',
-				title: 'New Conversation',
-				messages: {
-					create: {
-						content: message,
-						role: 'user'
-					}
-				}
-			},
-			include: {
-				messages: true
-			}
-		})
+    const { message } = await req.json();
 
-		return NextResponse.json(conversation);
-	} catch (error) {
-		console.error("Chat error:", error);
-		return NextResponse.json(
-			{
-				error: "Failed to process chat request",
-				details:
-					error instanceof Error ? error.message : "Unknown error",
-			},
-			{status: 500}
-		);
-	}
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful and friendly AI assistant engaging in a conversation. Keep responses concise and natural.",
+        },
+        {
+          role: "user",
+          content: message,
+        },
+      ],
+      model: "mixtral-8x7b-32768",
+      temperature: 0.7,
+      max_tokens: 200,
+    });
+
+    const response = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
+
+    return NextResponse.json({ response });
+  } catch (error) {
+    console.error("Chat error:", error);
+    return NextResponse.json(
+      { error: "Failed to process chat message" },
+      { status: 500 }
+    );
+  }
 }
