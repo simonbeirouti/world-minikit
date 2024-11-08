@@ -22,6 +22,7 @@ model User {
     aiPersonality     AIPersonality?
     interests         String[]       @default([])
     questions         Question[]
+    responses         Response[]
 
     @@map("users")
 }
@@ -93,6 +94,18 @@ model Question {
     createdAt DateTime @default(now())
 
     @@map("questions")
+}
+
+model Response {
+    id         String   @id @default(uuid())
+    questionId String   @db.Uuid
+    answer     String   @db.Text
+    userId     String   @db.Uuid
+    user       User     @relation(fields: [userId], references: [id])
+    createdAt  DateTime @default(now())
+
+    @@index([userId])
+    @@map("responses")
 }
 
 enum OnboardingStatus {
