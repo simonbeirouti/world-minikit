@@ -1,46 +1,45 @@
-import {NextResponse} from "next/server";
-import {getUserOnboardingStatus, updateUserProfile} from "@/lib/db";
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
+import {prisma} from "@/lib/prisma";
+import { generateQuestions } from "@/lib/groq";
 
-export async function GET(request: Request) {
-	const {searchParams} = new URL(request.url);
-	const userName = searchParams.get("userName");
-
-	if (!userName) {
-		return NextResponse.json({error: "User ID is required"}, {status: 400});
-	}
-
+export async function POST(req: Request) {
 	try {
-		const profile = await getUserOnboardingStatus(userName);
-		return NextResponse.json(profile);
-	} catch (error) {
-		console.error("Error fetching user onboarding status:", error);
-		return NextResponse.json(
-			{error: "Failed to fetch onboarding status"},
-			{status: 500}
-		);
-	}
-}
-
-export async function POST(request: Request) {
-	try {
-		const body = await request.json();
-		const {userId, profileData} = body;
-
-		if (!userId) {
-			return NextResponse.json({error: "User ID is required"}, {status: 400});
+		const session = await getServerSession(authOptions);
+		if (!session?.user?.name) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const updatedProfile = await updateUserProfile(userId, {
-			...profileData,
-			onboardingStatus: "COMPLETED"
+		const data = await req.json();
+		const { interests, ...otherData } = data;
+
+		// Update user profile
+		await prisma.user.update({
+			where: { id: session.user.name },
+			data: {
+				...otherData,
+				interests,
+				onboardingComplete: true,
+			},
 		});
 
-		return NextResponse.json(updatedProfile);
+		// Generate and store questions
+		// const generatedQuestions = await generateQuestions(interests);
+		
+		// await prisma.question.createMany({
+		// 	data: generatedQuestions.map(question => ({
+		// 		userId: session.user?.name!,
+		// 		question,
+		// 	})),
+		// });
+
+		return NextResponse.json({ success: true });
 	} catch (error) {
-		console.error("Error updating user profile:", error);
+		console.error("Onboarding error:", error);
 		return NextResponse.json(
-			{error: "Failed to update profile"},
-			{status: 500}
+			{ error: "Failed to complete onboarding" },
+			{ status: 500 }
 		);
 	}
 }

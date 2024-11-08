@@ -1,26 +1,32 @@
-import {NextResponse} from "next/server";
-import {prisma} from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-export async function GET(request: Request) {
-	const {searchParams} = new URL(request.url);
-	const worldIdHash = searchParams.get("worldIdHash");
-
-	if (!worldIdHash) {
-		return NextResponse.json({exists: false});
+export async function GET() {
+	const session = await getServerSession();
+	
+	if (!session?.user?.name) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
 	try {
+		// First find user by worldIdHash
 		const user = await prisma.user.findUnique({
-			where: {worldIdHash},
-			select: {id: true},
+			where: {
+				worldIdHash: session.user.name
+			},
+			include: {
+				profile: true
+			}
 		});
 
-		return NextResponse.json({exists: !!user});
+		if (!user) {
+			return NextResponse.json({ error: "User not found" }, { status: 404 });
+		}
+
+		return NextResponse.json({ profile: user.profile });
 	} catch (error) {
-		console.error("Error checking user existence:", error);
-		return NextResponse.json(
-			{error: "Failed to check user"},
-			{status: 500}
-		);
+		console.error("Error fetching profile:", error);
+		return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
 	}
 }
