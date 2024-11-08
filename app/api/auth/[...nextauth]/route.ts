@@ -39,6 +39,18 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
     },
+    session: async ({ session, token, user }) => {
+      if (session?.user) {
+        session.user.name = token.sub as string;
+      }
+      return session;
+    },
+    jwt: async ({ token, account, profile }) => {
+      if (account && profile) {
+        token.sub = profile.sub;
+      }
+      return token;
+    },
   },
   debug: process.env.NODE_ENV === "development",
 };
