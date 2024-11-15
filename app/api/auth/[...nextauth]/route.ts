@@ -1,5 +1,4 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import { createOrUpdateUser } from "@/lib/db";
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -19,37 +18,15 @@ export const authOptions: NextAuthOptions = {
         return {
           id: profile.sub,
           name: profile.sub,
-          verificationLevel: profile["https://id.worldcoin.org/v1"].verification_level,
+          verificationLevel:
+            profile["https://id.worldcoin.org/v1"].verification_level,
         };
       },
     },
   ],
   callbacks: {
-    async signIn({ user, profile }: any) {
-      try {
-        const worldcoinData = {
-          sub: profile.sub,
-          verification_level: profile["https://id.worldcoin.org/v1"].verification_level,
-        };
-        
-        await createOrUpdateUser(worldcoinData);
-        return true;
-      } catch (error) {
-        console.error("Error during sign in:", error);
-        return false;
-      }
-    },
-    session: async ({ session, token, user }) => {
-      if (session?.user) {
-        session.user.name = token.sub as string;
-      }
-      return session;
-    },
-    jwt: async ({ token, account, profile }) => {
-      if (account && profile) {
-        token.sub = profile.sub;
-      }
-      return token;
+    async signIn({ user }) {
+      return true;
     },
   },
   debug: process.env.NODE_ENV === "development",
